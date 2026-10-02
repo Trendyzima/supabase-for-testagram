@@ -38,7 +38,7 @@
 
 ### Bug Fixes
 
-* **auditlogs:** add IP address to IdentityUnlinkAction entires ([1a3a477](https://github.com/supabase/auth/commit/1a3a4773f1c59c3aa25d2d06b5be0c734f391a1a))
+* **auditlogs:** add IP address to IdentityUnlinkAction entries ([1a3a477](https://github.com/supabase/auth/commit/1a3a4773f1c59c3aa25d2d06b5be0c734f391a1a))
 * **auditlogs:** add missing IdentityUnlinkAction action ([9c45038](https://github.com/supabase/auth/commit/9c45038bb27079ac9dc31aa3ee41f69eebfb6f16))
 * **auditlogs:** add missing UserReauthenticateAction action ([dcc140f](https://github.com/supabase/auth/commit/dcc140f1fd7dd4d529c8ee116970a087cc4761d5))
 * clear pending phone change when the user's email is replaced ([5ce63bb](https://github.com/supabase/auth/commit/5ce63bbe251970ac3eb2bbfb160f5954563db4fd))
@@ -921,7 +921,7 @@
 
 * add SAML specific external URL config ([#1599](https://github.com/supabase/auth/issues/1599)) ([b352719](https://github.com/supabase/auth/commit/b3527190560381fafe9ba2fae4adc3b73703024a))
 * add support for verifying argon2i and argon2id passwords ([#1597](https://github.com/supabase/auth/issues/1597)) ([55409f7](https://github.com/supabase/auth/commit/55409f797bea55068a3fafdddd6cfdb78feba1b4))
-* make the email client explicity set the format to be HTML ([#1149](https://github.com/supabase/auth/issues/1149)) ([53e223a](https://github.com/supabase/auth/commit/53e223abdf29f4abcad13f99baf00daedcb00c3f))
+* make the email client explicitly set the format to be HTML ([#1149](https://github.com/supabase/auth/issues/1149)) ([53e223a](https://github.com/supabase/auth/commit/53e223abdf29f4abcad13f99baf00daedcb00c3f))
 
 
 ### Bug Fixes

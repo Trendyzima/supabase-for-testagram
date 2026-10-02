@@ -19,7 +19,7 @@ cli:
     use_defaultenv: true
   - name: no config
 # failures: config files
-  - name: non-existant config file
+  - name: non-existent config file
     expect: error
     args: ['does_not_exist.conf']
   - name: invalid config file

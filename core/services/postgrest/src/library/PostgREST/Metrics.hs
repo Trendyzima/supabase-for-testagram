@@ -84,7 +84,7 @@ observationMetrics MetricsState{..} obs = case obs of
   (HasqlPoolObs sqlObs) -> trackConnections connTrack sqlObs
   PoolRequest ->
     incGauge poolWaiting
-  PoolRequestFullfilled ->
+  PoolRequestFulfilled ->
     decGauge poolWaiting
   SchemaCacheLoadedObs resTime _ -> do
     withLabel schemaCacheLoads "SUCCESS" incCounter

@@ -163,10 +163,10 @@ impl Quota {
     fn get_dir_size(path: PathBuf) -> io::Result<u64> {
       use std::fs;
 
-      let entires = fs::read_dir(path)?;
+      let entries = fs::read_dir(path)?;
       let mut size = 0;
 
-      for entry in entires {
+      for entry in entries {
         let entry = entry?;
         let metadata = entry.metadata()?;
 

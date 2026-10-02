@@ -1304,25 +1304,25 @@ spec actualPgVersion withConfig = withConfig baseCfg $ do
     it "without other constraints" $
       get "/items?order=id.asc" `shouldRespondWith` 200
 
-    it "ordering embeded entities" $
+    it "ordering embedded entities" $
       get "/projects?id=eq.1&select=id, name, tasks(id, name)&tasks.order=name.asc"
         `shouldRespondWith` [json|[{"id":1,"name":"Windows 7","tasks":[{"id":2,"name":"Code w7"},{"id":1,"name":"Design w7"}]}]|]
           { matchHeaders = [matchContentTypeJson]
           }
 
-    it "ordering embeded entities with alias" $
+    it "ordering embedded entities with alias" $
       get "/projects?id=eq.1&select=id, name, the_tasks:tasks(id, name)&the_tasks.order=name.asc"
         `shouldRespondWith` [json|[{"id":1,"name":"Windows 7","the_tasks":[{"id":2,"name":"Code w7"},{"id":1,"name":"Design w7"}]}]|]
           { matchHeaders = [matchContentTypeJson]
           }
 
-    it "ordering embeded entities, two levels" $
+    it "ordering embedded entities, two levels" $
       get "/projects?id=eq.1&select=id, name, tasks(id, name, users(id, name))&tasks.order=name.asc&tasks.users.order=name.desc"
         `shouldRespondWith` [json|[{"id":1,"name":"Windows 7","tasks":[{"id":2,"name":"Code w7","users":[{"id":1,"name":"Angela Martin"}]},{"id":1,"name":"Design w7","users":[{"id":3,"name":"Dwight Schrute"},{"id":1,"name":"Angela Martin"}]}]}]|]
           { matchHeaders = [matchContentTypeJson]
           }
 
-    it "ordering embeded parents does not break things" $
+    it "ordering embedded parents does not break things" $
       get "/projects?id=eq.1&select=id, name, clients(id, name)&clients.order=name.asc"
         `shouldRespondWith` [json|[{"id":1,"name":"Windows 7","clients":{"id":1,"name":"Microsoft"}}]|]
 
@@ -1336,7 +1336,7 @@ spec actualPgVersion withConfig = withConfig baseCfg $ do
               ]
           }
 
-    it "filters, orders and limits aliased embeded entities using the target name" $ do
+    it "filters, orders and limits aliased embedded entities using the target name" $ do
       let pgrstVer = "PostgRESTv" <> BS.filter (/= ' ') prettyVersion
       get "/projects?id=eq.1&select=id, name, the_tasks:tasks(id, name)&tasks.name=like.Code*&tasks.order=name.asc&tasks.limit=1"
         `shouldRespondWith` [json|[{"id":1,"name":"Windows 7","the_tasks":[{"id":2,"name":"Code w7"}]}]|]
@@ -1954,7 +1954,7 @@ specLegacyTargetNames withConfig = withConfig (baseCfg{configUrlUseLegacyTargetN
             { matchHeaders = [matchContentTypeJson]
             }
     describe "ordering response" $
-      it "filters, orders or limits do not work with aliased embeded entities using the target name" $
+      it "filters, orders or limits do not work with aliased embedded entities using the target name" $
         get "/projects?id=eq.1&select=id, name, the_tasks:tasks(id, name)&tasks.name=like.Code*&tasks.order=name.asc&tasks.limit=1"
           `shouldRespondWith` [json|
             {

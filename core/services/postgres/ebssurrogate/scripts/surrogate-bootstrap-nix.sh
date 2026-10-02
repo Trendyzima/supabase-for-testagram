@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # This script creates filesystem and setups up chrooted
-# enviroment for further processing. It also runs
+# environment for further processing. It also runs
 # ansible playbook and finally does system cleanup.
 #
 # Adapted from: https://github.com/jen20/packer-ubuntu-zfs

@@ -11,7 +11,7 @@ create or replace function realtime.settled_changes (
   language plpgsql
   AS $function$
 declare
-  upto pg_lsn;
+  up to pg_lsn;
   total bigint;
   xids xid[];
   starts bigint[];
@@ -29,7 +29,7 @@ begin
 
   -- The peek and the read below cover the same WAL, so the read cannot reach a commit the
   -- check never saw.
-  upto := pg_current_wal_flush_lsn();
+  up to := pg_current_wal_flush_lsn();
 
   -- One entry per transaction, in commit order: its xid and the position of its first
   -- change. The peek uses the caller's own options, so max_changes counts exactly what the
@@ -46,14 +46,14 @@ begin
                when starts_with(p.data, '{"action":"M"') then (p.data::jsonb->>'transactional')::boolean is false
                else false
              end) as first
-      from pg_logical_slot_peek_changes(slot_name, upto, max_changes, variadic opts)
+      from pg_logical_slot_peek_changes(slot_name, up to, max_changes, variadic opts)
            with ordinality as p(lsn, xid, data, ord)
       group by p.xid
     ) g;
 
   -- Nothing for the caller, but the slot still has to move past what the peek covered.
   if total = 0 then
-    perform pg_replication_slot_advance(slot_name, upto);
+    perform pg_replication_slot_advance(slot_name, up to);
     return;
   end if;
 
@@ -85,10 +85,10 @@ begin
   -- transaction.
   if cut is null then
     return query
-      select p.* from pg_logical_slot_get_changes(slot_name, upto, max_changes, variadic opts) p;
+      select p.* from pg_logical_slot_get_changes(slot_name, up to, max_changes, variadic opts) p;
   elsif cut > 1 then
     return query
-      select p.* from pg_logical_slot_get_changes(slot_name, upto, (cut - 1)::int, variadic opts) p;
+      select p.* from pg_logical_slot_get_changes(slot_name, up to, (cut - 1)::int, variadic opts) p;
   end if;
 end;
 $function$;

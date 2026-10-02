@@ -59,7 +59,7 @@ data Observation
   | HasqlPoolObs SQL.Observation
   | ResponseObs (Maybe ByteString) Wai.Request Status (Maybe Integer)
   | PoolRequest
-  | PoolRequestFullfilled
+  | PoolRequestFulfilled
   | PoolFlushed
   | JwtCacheLookup Bool
   | JwtCacheEviction

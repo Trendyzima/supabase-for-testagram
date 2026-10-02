@@ -12900,13 +12900,13 @@ pub const ERROR_DS_CANT_CREATE_IN_NONDOMAIN_NC: i32 = 8553;
 pub const ERROR_DS_INVALID_NAME_FOR_SPN: i32 = 8554;
 
 //
-// MessageId: ERROR_DS_FILTER_USES_CONTRUCTED_ATTRS
+// MessageId: ERROR_DS_FILTER_USES_CONSTRUCTED_ATTRS
 //
 // MessageText:
 //
 //  A Filter was passed that uses export constructed attributes.
 //
-pub const ERROR_DS_FILTER_USES_CONTRUCTED_ATTRS: i32 = 8555;
+pub const ERROR_DS_FILTER_USES_CONSTRUCTED_ATTRS: i32 = 8555;
 
 //
 // MessageId: ERROR_DS_UNICODEPWD_NOT_IN_QUOTES
@@ -13404,7 +13404,7 @@ pub const ERROR_DS_CANT_MOVE_APP_QUERY_GROUP: i32 = 8609;
 //
 // MessageText:
 //
-//  The FSMO role ownership could not be verified because its directory partition has not replicated successfully with atleast one replication partner.
+//  The FSMO role ownership could not be verified because its directory partition has not replicated successfully with at least one replication partner.
 //
 pub const ERROR_DS_ROLE_NOT_VERIFIED: i32 = 8610;
 
@@ -15204,13 +15204,13 @@ pub const WSA_QOS_EOBJLENGTH: i32 = 11022;
 pub const WSA_QOS_EFLOWCOUNT: i32 = 11023;
 
 //
-// MessageId: WSA_QOS_EUNKOWNPSOBJ
+// MessageId: WSA_QOS_EUNKNOWNPSOBJ
 //
 // MessageText:
 //
 //  An unrecognized object was found in the QOS provider-specific buffer.
 //
-pub const WSA_QOS_EUNKOWNPSOBJ: i32 = 11024;
+pub const WSA_QOS_EUNKNOWNPSOBJ: i32 = 11024;
 
 //
 // MessageId: WSA_QOS_EPOLICYOBJ

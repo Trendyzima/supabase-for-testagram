@@ -353,14 +353,14 @@ def test_log_error_when_schema_cache_load_error_on_startup_to_stderr(defaultenv)
 
 @pytest.mark.parametrize("level", ["crit", "error", "warn", "info", "debug"])
 def test_log_pool_req_observation(level, defaultenv):
-    "PostgREST should log PoolRequest and PoolRequestFullfilled observation when log-level=debug"
+    "PostgREST should log PoolRequest and PoolRequestFulfilled observation when log-level=debug"
 
     env = {**defaultenv, "PGRST_LOG_LEVEL": level, "PGRST_JWT_SECRET": SECRET}
 
     headers = jwtauthheader({"role": "postgrest_test_author"}, SECRET)
 
     pool_req = r".*Trying to borrow a connection from pool.*"
-    pool_req_fullfill = r".*Borrowed a connection from the pool.*"
+    pool_req_fulfill = r".*Borrowed a connection from the pool.*"
 
     with run(env=env) as postgrest:
 
@@ -369,7 +369,7 @@ def test_log_pool_req_observation(level, defaultenv):
         if level == "debug":
             output = postgrest.read_stdout(nlines=7)
             assert len(output) == 7
-            match_log(output, [pool_req, pool_req_fullfill])
+            match_log(output, [pool_req, pool_req_fulfill])
         elif level == "info":
             output = postgrest.read_stdout(nlines=4)
             assert len(output) == 1

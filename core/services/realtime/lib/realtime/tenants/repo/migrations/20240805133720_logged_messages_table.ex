@@ -4,7 +4,7 @@ defmodule Realtime.Tenants.Migrations.LoggedMessagesTable do
 
   def change do
     execute """
-    -- Commented to have oriole compatability
+    -- Commented to have oriole compatibility
     -- ALTER TABLE realtime.messages SET LOGGED;
     """
   end

@@ -48,7 +48,7 @@ usePool appState@AppState{stateObserver = observer, ..} sess = do
 
   res <- SQL.use statePool sess
 
-  observer PoolRequestFullfilled
+  observer PoolRequestFulfilled
 
   whenLeft
     res

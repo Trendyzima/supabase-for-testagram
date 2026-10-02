@@ -1,4 +1,4 @@
-"Unit tests for Input/Ouput of PostgREST seen as a black box."
+"Unit tests for Input/Output of PostgREST seen as a black box."
 
 from operator import attrgetter
 import signal

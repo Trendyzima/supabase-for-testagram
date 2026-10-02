@@ -94,7 +94,7 @@ observationLogger loggerState obs = do
     o@PoolRequest ->
       when (logLevel >= LogDebug) $ do
         logWithZTime $ observationMessages o
-    o@PoolRequestFullfilled ->
+    o@PoolRequestFulfilled ->
       when (logLevel >= LogDebug) $ do
         logWithZTime $ observationMessages o
     ResponseObs maybeRole req status contentLen ->
@@ -246,7 +246,7 @@ observationMessages = \case
            )
   PoolRequest ->
     pure "Trying to borrow a connection from pool"
-  PoolRequestFullfilled ->
+  PoolRequestFulfilled ->
     pure "Borrowed a connection from the pool"
   PoolFlushed ->
     pure "Database connection pool flushed"

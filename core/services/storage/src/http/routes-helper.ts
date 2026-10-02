@@ -8,7 +8,7 @@ type SchemaObject = Record<string, unknown>
  * @param message {string} Main message
  * @param status {string=} StatusCode
  * @param error {string=} Error number (presented as a string)
- * @return {BucketResponseType} Object with all paramaters
+ * @return {BucketResponseType} Object with all parameters
  */
 function createResponse(message: string, status?: string, error?: string): BucketResponseType {
   const response: BucketResponseType = {

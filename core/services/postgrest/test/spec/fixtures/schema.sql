@@ -3823,7 +3823,7 @@ create table factory_buildings (
   inspections jsonb
 );
 
--- collision test as occured in https://github.com/PostgREST/postgrest/issues/4052
+-- collision test as occurred in https://github.com/PostgREST/postgrest/issues/4052
 create table test.collision_test_table (id integer);
 comment on table collision_test_table is 'foobarbaz';
 

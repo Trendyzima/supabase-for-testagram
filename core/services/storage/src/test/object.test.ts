@@ -2839,7 +2839,7 @@ describe('testing uploading with generated signed upload URL', () => {
     expect(response.statusCode).toBe(200)
     expect(S3Backend.prototype.uploadObject).toHaveBeenCalled()
 
-    // check that row has neccessary data
+    // check that row has necessary data
     const db = await getSuperuserPostgrestClient()
     const objectResponse = await findObject(db, BUCKET_ID, OBJECT_NAME)
     expect(objectResponse?.owner).toBe(owner)
