@@ -143,3 +143,53 @@ begin
     );
   end loop;
 end $$;
+
+-- Privileged governance mutations must require MFA.
+create or replace function public.testagram_update_admin(p_user_id uuid, p_role_name text, p_status text default 'active', p_reason text default null)
+returns jsonb
+language plpgsql
+security definer
+set search_path=''
+as $function$
+declare v_role_id uuid;
+begin
+  if not public.testagram_is_owner() then raise exception 'Only the Testagram system owner can manage administrators'; end if;
+  perform public.testagram_require_privileged_session();
+  if p_user_id = (select auth.uid()) then raise exception 'The owner cannot be changed through administrator assignment'; end if;
+  if p_status not in ('active','suspended','revoked') then raise exception 'Invalid administrator status'; end if;
+  select id into v_role_id from public.testagram_governance_roles where name=p_role_name;
+  if v_role_id is null then raise exception 'Unknown governance role'; end if;
+  update public.testagram_governance_admin_assignments
+  set role_id=v_role_id,status=p_status,
+      employment_status=case when p_status='revoked' then 'terminated' when p_status='suspended' then 'suspended' else 'active' end,
+      employment_ended_at=case when p_status='revoked' then now() else null end,
+      updated_at=now(),revoked_at=case when p_status='revoked' then now() else null end
+  where user_id=p_user_id;
+  if not found then raise exception 'Administrator assignment not found'; end if;
+  insert into public.testagram_governance_audit_log(actor_user_id,action,target_user_id,role_name,reason)
+  values((select auth.uid()),case when p_status='revoked' then 'staff.terminated' when p_status='suspended' then 'staff.suspended' else 'staff.activated' end,p_user_id,p_role_name,coalesce(p_reason,'Owner governance change'));
+  return public.testagram_get_governance_for_user(p_user_id);
+end;
+$function$;
+
+create or replace function public.testagram_review_job_application(p_application_id uuid, p_status text, p_note text default null)
+returns jsonb
+language plpgsql
+security definer
+set search_path=''
+as $function$
+declare v_user uuid; v_role text;
+begin
+  if not public.testagram_is_owner() then raise exception 'Only the system owner can review job applications'; end if;
+  perform public.testagram_require_privileged_session();
+  if p_status not in ('reviewing','shortlisted','accepted','rejected','withdrawn') then raise exception 'Invalid application status'; end if;
+  select user_id,role_name into v_user,v_role from public.testagram_job_applications where id=p_application_id for update;
+  if v_user is null then raise exception 'Application not found'; end if;
+  update public.testagram_job_applications
+  set status=p_status,reviewed_by=(select auth.uid()),review_note=left(p_note,4000),updated_at=now()
+  where id=p_application_id;
+  insert into public.testagram_governance_audit_log(actor_user_id,action,target_user_id,role_name,reason,metadata)
+  values((select auth.uid()),'job.application.reviewed',v_user,v_role,coalesce(p_note,'Owner reviewed application'),jsonb_build_object('application_id',p_application_id,'status',p_status));
+  return jsonb_build_object('id',p_application_id,'status',p_status);
+end;
+$function$;
