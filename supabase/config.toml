@@ -27,10 +27,12 @@ public = true
 objects_path = "buckets/fonts"
 
 [auth]
-site_url = "http://localhost:3000"
+site_url = "https://testagram.site"
 additional_redirect_urls = [
+    "https://testagram.site/*",
+    "https://www.testagram.site/*",
+    "http://localhost:3000/*",
     "https://*-supabase.vercel.app/*/*",
-    "http://localhost:3000/*/*",
 ]
 jwt_expiry = 3600
 enable_signup = true
