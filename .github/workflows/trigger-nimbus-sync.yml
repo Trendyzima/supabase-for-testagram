@@ -13,11 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NIMBUS_SYNC_TOKEN: ${{ secrets.NIMBUS_SYNC_TOKEN }}
-    if: ${{ env.NIMBUS_SYNC_TOKEN != '' }}
     steps:
       - name: Trigger sync in supabase-nimbus
+        if: ${{ env.NIMBUS_SYNC_TOKEN != '' }}
         uses: peter-evans/repository-dispatch@5fc4efd1a4797ddb68ffd0714a238564e4cc0e6f # v4.0.0
         with:
           token: ${{ env.NIMBUS_SYNC_TOKEN }}
           repository: supabase/supabase-nimbus
           event-type: sync_from_upstream
+      - name: Report missing Nimbus token
+        if: ${{ env.NIMBUS_SYNC_TOKEN == '' }}
+        run: echo "NIMBUS_SYNC_TOKEN is not configured; Nimbus sync is intentionally skipped."
