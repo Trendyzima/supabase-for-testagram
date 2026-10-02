@@ -10,7 +10,6 @@ concurrency:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   build:
@@ -18,17 +17,21 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          persist-credentials: false
+          persist-credentials: true
           ref: master
 
       - uses: sobolevn/misspell-fixer-action@06ff0b508d4f4c0ba70d15f9a628232c0aade536 # 0.1.0
 
-      - name: Create typo-fix pull request
-        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
-        with:
-          token: ${{ github.token }}
-          commit-message: "chore: fix typos"
-          title: "chore: fix typos"
-          body: "Automated typo corrections."
-          branch: chore/typo-fixes
-          delete-branch: true
+      - name: Commit typo fixes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No typo fixes were produced."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: fix typos"
+          git push origin HEAD:master
