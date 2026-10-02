@@ -30,15 +30,24 @@ Deno.serve(async (req) => {
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const publishableKeys = Deno.env.get("SUPABASE_PUBLISHABLE_KEYS");
+  let supabasePublishableKey: string | undefined;
+  try {
+    supabasePublishableKey = publishableKeys
+      ? (JSON.parse(publishableKeys) as Record<string, string>)["default"]
+      : undefined;
+  } catch {
+    supabasePublishableKey = undefined;
+  }
+  supabasePublishableKey ??= Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY");
   const novuApiKey = Deno.env.get("NOVU_API_KEY");
 
-  if (!supabaseUrl || !supabaseAnonKey || !novuApiKey) {
+  if (!supabaseUrl || !supabasePublishableKey || !novuApiKey) {
     console.error("[register-push-token] required server configuration is missing");
     return json(500, { error: "server_not_configured" });
   }
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  const supabase = createClient(supabaseUrl, supabasePublishableKey, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
@@ -100,13 +109,23 @@ Deno.serve(async (req) => {
 
   // PATCH appends/deduplicates the device token instead of replacing another
   // device's token. Novu manages the provider credential set per subscriber.
+  // Hash the token in the idempotency key so the raw device credential never
+  // appears in a request header.
+  const tokenDigest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(token),
+  );
+  const tokenHash = Array.from(new Uint8Array(tokenDigest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+
   const credentialsResponse = await fetch(
     `https://api.novu.co/v1/subscribers/${encodeURIComponent(userData.user.id)}/credentials`,
     {
       method: "PATCH",
       headers: {
         ...novuHeaders,
-        "idempotency-key": `fcm:${userData.user.id}:${token}`,
+        "idempotency-key": `fcm:${userData.user.id}:${tokenHash}`,
       },
       body: JSON.stringify({
         providerId: "fcm",
