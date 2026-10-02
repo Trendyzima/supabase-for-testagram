@@ -86,7 +86,6 @@ async function sendFcm(sa: ServiceAccount, bearer: string, token: string, title:
         android: {
           priority: "high",
           ttl: "2419200s",
-          restricted_package_name: "com.xclone.app",
           notification: {channel_id: "testagram_notifications", default_sound: true, notification_priority: "high"},
         },
       },
