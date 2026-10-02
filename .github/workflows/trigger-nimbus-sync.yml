@@ -3,13 +3,14 @@ name: Trigger Nimbus Sync
 on:
   push:
     branches: [master]
-  workflow_dispatch: # Allow manual triggering
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   trigger-nimbus-sync:
+    if: ${{ secrets.NIMBUS_SYNC_TOKEN != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Trigger sync in supabase-nimbus
