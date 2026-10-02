@@ -121,20 +121,45 @@ Deno.serve(async (req) => {
   const supplied = req.headers.get("x-notification-worker-token");
   if (!expected || !supplied || supplied !== expected) return json(401, {error: "unauthorized"});
 
-  const rawServiceAccount = Deno.env.get("FCM_SERVICE_ACCOUNT_JSON") || await secret(admin, "fcm_service_account_json");
-  if (!rawServiceAccount) return json(503, {error: "fcm_not_configured"});
+  const envCredential = Deno.env.get("FCM_SERVICE_ACCOUNT_JSON");
+  const vaultCredential = await secret(admin, "fcm_service_account_json");
+  const credentialCandidates = [
+    {source: "env", raw: envCredential},
+    {source: "vault", raw: vaultCredential},
+  ].filter((candidate, index, all) =>
+    typeof candidate.raw === "string" &&
+    candidate.raw.length > 0 &&
+    all.findIndex((other) => other.raw === candidate.raw) === index
+  );
 
-  let sa: ServiceAccount;
-  try {
-    sa = JSON.parse(rawServiceAccount);
-    if (!sa.project_id || !sa.client_email || !sa.private_key) throw new Error("invalid_service_account");
-  } catch {
-    return json(500, {error: "invalid_fcm_service_account"});
+  if (!credentialCandidates.length) return json(503, {error: "fcm_not_configured"});
+
+  let sa: ServiceAccount | null = null;
+  let bearer: string | null = null;
+  const authFailures: string[] = [];
+
+  for (const candidate of credentialCandidates) {
+    try {
+      const parsed = JSON.parse(candidate.raw as string) as ServiceAccount;
+      if (!parsed.project_id || !parsed.client_email || !parsed.private_key) throw new Error("invalid_service_account");
+      const token = await accessToken(parsed);
+      sa = parsed;
+      bearer = token;
+      break;
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "unknown";
+      authFailures.push(candidate.source + ":" + message.slice(0, 80));
+      console.error("[notification-worker] FCM auth candidate failed", {
+        source: candidate.source,
+        error: message.slice(0, 160),
+      });
+    }
   }
 
-  let bearer: string;
-  try { bearer = await accessToken(sa); }
-  catch (e) { console.error("[notification-worker] FCM auth failed", e); return json(502, {error: "fcm_auth_failed"}); }
+  if (!sa || !bearer) {
+    console.error("[notification-worker] all FCM auth candidates failed", authFailures);
+    return json(502, {error: "fcm_auth_failed"});
+  }
 
   const {data: batch, error: claimError} = await admin.rpc("claim_notification_delivery_batch", {p_limit: 20});
   if (claimError) return json(500, {error: "claim_failed"});
